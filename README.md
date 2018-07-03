@@ -1,5 +1,7 @@
 # Windowing and Protrusion Package 
 
+![Alt Text](windowsimg.jpg?raw=true)
+
 This package is designed to allow the user to analyze local cell edge motions (e.g. protrusion and retraction) and to locally sample intracellular fluorescence signals in 2D fluorescence microscopy data. The cell interior is divided up into sampling “windows”, each of which is associated with a region of the cell edge based on proximity. This therefore allows the fluorescence time-series which are extracted from the cell interior to be correlated with the calculated cell edge velocities. Alternatively, it may be used solely to analyze cell edge motion, or solely to analyze spatiotemporal patterns of intracellular fluorescence.
 
 #### Important Note
