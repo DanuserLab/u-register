@@ -59,13 +59,13 @@ hPosition3=10;
 
 % Create series of anonymous function to generate process controls
 createProcText= @(panel,i,j,pos,name) uicontrol(panel,'Style','text',...
-    'Position',[10 pos 250 20],'Tag',['text_process' num2str(i)],...
+    'Position',[10 pos 285 20],'Tag',['text_process' num2str(i)],...
     'String',name,'HorizontalAlignment','left','FontWeight','bold');
 createOutputText= @(panel,i,j,pos,text) uicontrol(panel,'Style','text',...
-    'Position',[40 pos 200 20],'Tag',['text_process' num2str(i) '_output'...
+    'Position',[25 pos 285 20],'Tag',['text_process' num2str(i) '_output'...
     num2str(j)],'String',text,'HorizontalAlignment','left');
 createChannelBox= @(panel,i,j,k,pos,varargin) uicontrol(panel,'Style','checkbox',...
-    'Position',[200+30*k pos 20 20],'Tag',['checkbox_process' num2str(i) '_output'...
+    'Position',[285+30*k pos 20 20],'Tag',['checkbox_process' num2str(i) '_output'...
     num2str(j) '_channel' num2str(k)],varargin{:});
 createMovieBox= @(panel,i,j,pos,name,varargin) uicontrol(panel,'Style','checkbox',...
     'Position',[40 pos 200 25],'Tag',['checkbox_process' num2str(i) '_output'...
@@ -74,7 +74,7 @@ createInputBox= @(panel,i,j,k,pos,name,varargin) uicontrol(panel,'Style','checkb
     'Position',[40 pos 200 25],'Tag',['checkbox_process' num2str(i) '_output'...
     num2str(j) '_input' num2str(k)],'String',[' ' name],varargin{:});
 createInputInputBox= @(panel,i,j,k,l,pos,varargin) uicontrol(panel,'Style','checkbox',...
-    'Position',[200+30*l pos 20 20],'Tag',['checkbox_process' num2str(i) '_output'...
+    'Position',[285+30*l pos 20 20],'Tag',['checkbox_process' num2str(i) '_output'...
     num2str(j) '_input' num2str(k) '_input' num2str(l)],varargin{:});
 
 hPosition3 = createScalarMapOptions(graphPanel,hPosition3);
@@ -155,10 +155,10 @@ for iProc=nProc:-1:1;
 end
 
 if ~isempty(graphProc) && isa(userData.MO,'MovieData')
-    uicontrol(graphPanel,'Style','text','Position',[120 hPosition3 100 20],...
+    uicontrol(graphPanel,'Style','text','Position',[160 hPosition3 100 20],...
         'Tag','text_channels','String','Channels');
     arrayfun(@(i) uicontrol(graphPanel,'Style','text',...
-        'Position',[200+30*i hPosition3 20 20],...
+        'Position',[285+30*i hPosition3 20 20],...
         'Tag',['text_channel' num2str(i)],'String',i),...
         1:numel(userData.MO.channels_));
 end
@@ -243,10 +243,16 @@ iOutput = str2double(tokens{1}{2});
 output = outputList(iOutput).var;
 
 % Discriminate between channel-specific and movie processes
+try 
+    iFrame = get(findobj(0,'-regexp','Tag','slider_frame'),'Value');
+catch
+    iFrame = [];
+    warning('frame not provided correctly to graphViewer');
+end
 tokens = regexp(graphTag,'_channel(\d+)$','tokens');
 if ~isempty(tokens)
     iChan = str2double(tokens{1}{1});
-    figName = [outputList(iOutput).name '_Channel_' num2str(iChan)];
+    figName = [outputList(iOutput).name '_Channel_' num2str(iChan) '_' num2str(iFrame)];
     if strcmp({outputList(iOutput).type},'sampledGraph')
         inputArgs={iChan,iOutput};
     else
@@ -280,6 +286,8 @@ set(h,'Tag','graphFig');
 upSample = str2double(get(handles.edit_UpSample,'String'));
 smoothParam = str2double(get(handles.edit_SmoothParam,'String'));
 
+
+
 if userData.MO.is3D() % && userData.MO.processes_{procId}.is3DP()
     try 
         ZNr = get(findobj(0,'-regexp','Tag','slider_depth'),'Value');
@@ -287,8 +295,9 @@ if userData.MO.is3D() % && userData.MO.processes_{procId}.is3DP()
         ZNr = [];
         warning('Z slice not provided correctly to graphViewer');
     end
+    
     userData.MO.processes_{procId}.draw(inputArgs{:}, 'output', output,...
-    'UpSample', upSample,'SmoothParam', smoothParam, 'iZ', ZNr);
+    'UpSample', upSample,'SmoothParam', smoothParam, 'iZ', ZNr,'iFrame', iFrame);
 else
     userData.MO.processes_{procId}.draw(inputArgs{:}, 'output', output,...
     'UpSample', upSample,'SmoothParam', smoothParam);

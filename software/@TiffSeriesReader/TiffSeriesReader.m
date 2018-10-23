@@ -34,7 +34,7 @@ classdef  TiffSeriesReader < Reader
         function obj = TiffSeriesReader(channelPaths,varargin)
             ip = inputParser;
             ip.CaseSensitive = false;
-            ip.addParamValue('force3D',false, @islogical);
+            ip.addParameter('force3D',false, @islogical);
             ip.parse(varargin{:});
             
             obj.paths = channelPaths;

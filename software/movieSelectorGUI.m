@@ -208,6 +208,8 @@ packageList = {
     'MicroNucQuantPackage'
     'MaskPropsCalcFilterPackage'
     'MaskQuantPackage'
+    'Morphology3DPackage'
+    'XcorrFluctuationPackage'
     };
 validPackage = cellfun(@(x) exist(x,'class')==8,packageList);
 packageList = packageList(validPackage);

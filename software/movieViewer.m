@@ -64,7 +64,7 @@ ip.addRequired('MO',@(x) isa(x,'MovieObject'));
 ip.addOptional('procId',[],@isnumeric);
 ip.addOptional('refresher',[],@isstr);
 ip.addParameter('movieIndex',0,@isscalar);
-ip.addParameter('showProcTag',0,@islogical);
+ip.addParameter('showProcTag',1,@islogical);
 ip.parse(MO,varargin{:});
 
 if strcmp(ip.Results.refresher, '1') == 1
@@ -605,7 +605,7 @@ if isequal(props{1}(props{2}), userData.movieIndex),return;end
 if isempty(userData.procId)
    movieViewer(userData.ML,'movieIndex',props{1}(props{2})); 
 else
-movieViewer(userData.ML,userData.procId,'movieIndex',props{1}(props{2}));
+movieViewer(userData.ML,'procId', userData.procId,'movieIndex',props{1}(props{2}));
 end
 
 function size = getPanelSize(hPanel)

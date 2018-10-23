@@ -243,7 +243,7 @@ classdef  MovieObject < hgsetget
         end
 
         function [nameList, procList] = getPackageNames(obj)
-            % Retreives all process names, and proc associated
+            % Retreives all process names, and packs associated
             packs = obj.packages_;
             nameList = [];
             procList = [];
@@ -251,6 +251,12 @@ classdef  MovieObject < hgsetget
                 if isprop(p{:}, 'name_')
                     nameList = [nameList {p{:}.name_}];
                     procList = [procList p];
+                else
+                    try 
+                        nameList = [nameList {class(p{:})}];
+                        procList = [procList p];
+                    catch
+                    end
                 end
             end
         end
@@ -279,7 +285,7 @@ classdef  MovieObject < hgsetget
             ip.addOptional('safeCall', false, @islogical);
             ip.addOptional('queryField', 'tag', @ischar);   % or name
             ip.addOptional('findPackage', false, @islogical);   % or name
-            ip.addOptional('selectIdx',[]);   % or name
+            ip.addOptional('selectIdx',[],@(x) ischar(x) || isnumeric(x));   % or name
 
             ip.parse(queryStr, varargin{:});
             exactMatch = ip.Results.exactMatch;

@@ -261,12 +261,20 @@ classdef  MovieData < MovieObject & matlab.mixin.Heterogeneous
             if nargin < 2 || isempty(iChan), iChan = 1:numel(obj.channels_); end
             assert(all(insequence(iChan,1,numel(obj.channels_))),...
                 'Invalid channel index specified! Cannot return path!');
-            
-            chanPaths = obj.getReader().getChannelNames(iChan);
+            %% TODO - bug with bioformats reader --- ?
+           % if isa(obj.getReader,'BioFormatsReader')
+               % getchanPaths = @(x)char(obj.channels_(x).getReader().getReader().getUsedFiles());
+              %  chanPaths = arrayfun(@(x) getchanPaths(x), iChan,'UniformOutput', false);
+            % else
+            % if isa(obj.getReader,'BioFormatsReader')
+            %     chanPaths = {char(obj.channels_(iChan).getReader().getReader().getUsedFiles())};
+            % else
+                chanPaths = obj.getReader().getChannelNames(iChan);
+            % end
         end
         
         function chanNames = getChannelNames(obj,iChan)
-            % Returns the directories for the selected channels
+            % Returns the Names for the selected channels
             if nargin < 2 || isempty(iChan), iChan = 1:numel(obj.channels_); end
             assert(all(insequence(iChan,1,numel(obj.channels_))),...
                 'Invalid channel index specified!');
@@ -663,7 +671,11 @@ classdef  MovieData < MovieObject & matlab.mixin.Heterogeneous
             elseif obj.isHCS()
                 r = HCSReader(obj.channels_);
             else
-                r = TiffSeriesReader({obj.channels_.channelPath_});
+                if ~isempty(obj.pixelSizeZ_) && obj.pixelSizeZ_ > 0
+                    r = TiffSeriesReader({obj.channels_.channelPath_},'force3D', true);
+                else
+                    r = TiffSeriesReader({obj.channels_.channelPath_});
+                end
             end
         end
         
@@ -787,7 +799,7 @@ classdef  MovieData < MovieObject & matlab.mixin.Heterogeneous
         function [obj, absolutePath] = loadMatFile(filepath)
             % Load a movie data from a local MAT file
             [obj, absolutePath] = MovieObject.loadMatFile('MovieData', filepath);
-            if((obj.zSize_>1)&&(obj.nFrames_==1)&&(isa(obj.getReader(),'TiffSeriesReader')||isempty(obj.getReader)))
+            if(~isempty(obj.zSize_)&&(obj.zSize_>1)&&(obj.nFrames_==1)&&(isa(obj.getReader(),'TiffSeriesReader')||isempty(obj.getReader)))
                 obj.setReader(TiffSeriesReader({obj.channels_.channelPath_},'force3D',true))
             end
         end

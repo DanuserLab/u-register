@@ -41,11 +41,19 @@ if isfield(params,'PerChannelParams') && ~isempty(params.PerChannelParams) && is
     for j = 1:nPCPar        
         if isfield(params,params.PerChannelParams{j})
             %nEl = numel(params.(params.PerChannelParams{j}));
+            if ischar(params.(params.PerChannelParams{j})) 
+                params.(params.PerChannelParams{j}) = {params.(params.PerChannelParams{j})};
+            end
             nEl = size(params.(params.PerChannelParams{j}),2);
             if  nEl == 1
                 params.(params.PerChannelParams{j}) = repmat(params.(params.PerChannelParams{j}),[1 nChan]);
             elseif nEl ~= nChan
-                error(['The parameter "' params.PerChannelParams{j} '" was designated as a per-channel parameter, but contained ' num2str(nEl) ' elements - this must be specified as either a scalar or have array of size equal to the number of channels!'])
+                try
+                    warning(['The parameter "' params.PerChannelParams{j} '" was designated as a per-channel parameter, but contained ' num2str(nEl) ' elements - this must be specified as either a scalar or have array of size equal to the number of channels!'])
+                    params.(params.PerChannelParams{j}) = repmat({params.(params.PerChannelParams{j})},[1 nChan]);
+                catch
+                    error(['The parameter "' params.PerChannelParams{j} '" was designated as a per-channel parameter, but contained ' num2str(nEl) ' elements - this must be specified as either a scalar or have array of size equal to the number of channels!'])    
+                end
             end                                    
         end
     end        

@@ -154,7 +154,16 @@ for i = 1 : nSeries
         end
         
         % Create new channel
-        movieChannels(i, iChan) = Channel(dataPath, channelArgs{:});
+        try
+            movieChannels(i, iChan) = Channel(dataPath, channelArgs{:});
+        catch err
+            warning(['Possible failure with Channel metadata import or ', ... 
+                'property validation  (please verify) -- for ' dataPath ...
+                ', Series ' num2str(iSeries) ... 
+                     ', Channel ' num2str(iChan) ...
+                ' Now attempting default Channel constructor.']);
+            movieChannels(i, iChan) = Channel(dataPath);
+        end
     end
     
     % Create movie object

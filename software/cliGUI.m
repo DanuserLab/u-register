@@ -40,8 +40,13 @@ function out = cliGUI(string,hfig1,procID,varargin)
 %     set(handles.pushbutton_cancel,'Callback',@(hobject,evendata) disp('Type <a href="matlab:dbquit">dbquit</a> to cancel.'));
     set(handles.pushbutton_done,'Callback',@robo_dbcont);
     set(handles.pushbutton_cancel,'Callback',@robo_dbquit);
-    disp('Welcome to Command Line Interface "GUI"');
-    
+    disp('---------------------------------------');
+    disp('---------------------------------------');
+    disp('---------------------------------------');
+    disp(' ');
+    disp(' ');
+    disp('Welcome to Command Line Interface "GUI" <<<<<------------');
+    disp(' ');
     disp('---------------------------------------');
     disp('Stored in the struct <a href="matlab:funParams">funParams</a> are the process'' parameters.');
     disp('Type <a href="matlab:openvar(''funParams'')">openvar(''funParams'')</a> to use the variable editor.')

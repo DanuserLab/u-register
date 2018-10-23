@@ -41,10 +41,10 @@ classdef MovieDataDisplay < handle
             ip.addRequired('obj',@(x) isa(x,'MovieDataDisplay'));
             ip.addRequired('data',obj.getDataValidator());
             ip.addRequired('tag',@ischar);
-            ip.addParamValue('hAxes',gca,@ishandle);
+            ip.addParameter('hAxes',gca,@ishandle);
             params = obj.getParamValidators;
             for i=1:numel(params)
-                ip.addParamValue(params(i).name,obj.(params(i).name),params(i).validator);
+                ip.addParameter(params(i).name,obj.(params(i).name),params(i).validator);
             end
             ip.KeepUnmatched = true; % Allow unmatched arguments
             ip.parse(obj,data,tag,varargin{:});

@@ -57,7 +57,13 @@ else
         %Remove the . and .. from dir (on linux)
         inDir = inDir(arrayfun(@(x)(~strcmp('.',x.name) ...
             && ~strcmp('..',x.name)),inDir));
-        arrayfun(@(x)(delete([dirPath filesep x.name])),inDir);
+        for i = 1:numel(inDir)
+            if inDir(i).isdir
+                rmdir([dirPath filesep inDir(i).name],'s');
+            else
+                delete([dirPath filesep inDir(i).name]);
+            end
+        end
     end
     if(verbose)
         display(['The folder ' dirPath ' already existed. Cleaning the folder ...'])

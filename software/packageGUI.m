@@ -251,8 +251,16 @@ procID = str2double(prop(length('pushbutton_set_')+1:end));
 % Read GUI handle from the associated process static method
 crtProc=userData.crtPackage.getProcessClassNames{procID};
 crtProcGUI =eval([crtProc '.GUI']);
+try 
+    userData.setFig(procID) = crtProcGUI('mainFig',handles.figure1,procID);
+catch ME
+    msgbox(ME.message)
+%     rethrow(ME)
+    warning('Loading Custom GUI failed! -- Running CLI parameter config as BACKUP - follow instructions');
+    uiwait(msgbox({'Loading Custom GUI failed!','Running CLI parameter config as BACKUP','Please follow instructions'}));
+    userData.setFig(procID) = cliGUI('mainFig',handles.figure1,procID);
+end
 
-userData.setFig(procID) = crtProcGUI('mainFig',handles.figure1,procID);
 set(handles.figure1, 'UserData', userData);
 guidata(hObject,handles);
 
@@ -556,6 +564,9 @@ function checkbox_tagName_Callback(hObject, eventdata, handles)
 % Hint: get(hObject,'Value') returns toggle state of checkbox_tagName
 % handles.processTagLabels = findall(0,'-regexp','Tag', 'processTagLabel');
 % handles.processTagLabels;
+
+%% TODO - need refresh of tags after runnings
+
 if handles.checkbox_tagName.Value == 0;
     set(handles.processTagLabels, 'Visible', 'off')
 else

@@ -76,7 +76,7 @@ classdef Process < hgsetget
                 obj.procChanged_ = false;
                 obj.success_ = false;
                 obj.updated_ = true;
-                obj.processTree_ = owner.processes_
+                obj.processTree_ = owner.processes_;
                 
                 % set default tag label
                 numproc = numel(owner.getProcessIndex(class(obj), Inf, 0));
@@ -405,8 +405,8 @@ classdef Process < hgsetget
             ip.addParameter('movieOverlay', false, @islogical);
             ip.KeepUnmatched = true;
             if obj.owner_.is3D()
-                ip.addOptional('projectionAxis3D','Z', @(x) ismember(x,{'X','Y','Z','three'}));
                 ip.addOptional('iZ',[],@(x) insequence(x,1,obj.owner_.zSize_));
+                ip.addOptional('projectionAxis3D','Z', @(x) ismember(x,{'X','Y','Z','three'}));
             end
             ip.parse(obj,iChan,varargin{:});
             
@@ -426,7 +426,7 @@ classdef Process < hgsetget
             if ip.Results.useCache
                 loadParams.useCache = true;
             end
-            loadArgs = [ loadArgs loadParams];
+            loadArgs = [loadArgs loadParams];
             
             data = obj.loadChannelOutput(loadArgs{:});
                 
