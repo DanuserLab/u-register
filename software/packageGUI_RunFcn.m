@@ -41,6 +41,9 @@ set(handles.figure1, 'UserData', userData)
 
 % Determine the movie(s) to be processed
 if ~isempty(userData.MD), field='MD'; else field = 'ML'; end
+if isa(userData.crtPackage, 'XcorrFluctuationPackage')
+    field = 'ML';
+end
 nMovies = length(userData.(field)); % number of movies
 if get(handles.checkbox_runall, 'Value')
     movieList = circshift(1:nMovies,[0 -(userData.id-1)]);
