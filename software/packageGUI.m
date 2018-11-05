@@ -123,6 +123,10 @@ userData.statusM(userData.id).Checked = userfcn_saveCheckbox(handles);
 
 % Set up new movie GUI parameters
 userData.id = mod(newMovieId-1,nMovies)+1;
+if isa(userData.crtPackage, 'XcorrFluctuationPackage')
+    nMovieLists = length(userData.ML);
+    userData.id = mod(newMovieId-1,nMovieLists)+1;
+end
 userData.crtPackage = userData.package(userData.id);
 set(handles.figure1, 'UserData', userData)
 set(handles.popupmenu_movie, 'Value', userData.id)
