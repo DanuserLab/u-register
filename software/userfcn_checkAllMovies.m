@@ -3,9 +3,10 @@ function userfcn_checkAllMovies(procID, value, handles)
 if get(handles.checkbox_all, 'Value')
     
     userData = get(handles.figure1, 'UserData');
-    for x = setdiff(1:length(userData.MD), userData.id)
-        % Recalls the userData that may have been updated by the
-        % checkAllMovies function
+    if ~isa(userData.crtPackage, 'XcorrFluctuationPackage')
+        for x = setdiff(1:length(userData.MD), userData.id)
+            % Recalls the userData that may have been updated by the
+            % checkAllMovies function
 %
 % Copyright (C) 2018, Danuser Lab - UTSouthwestern 
 %
@@ -25,11 +26,22 @@ if get(handles.checkbox_all, 'Value')
 % along with WindowingPackage.  If not, see <http://www.gnu.org/licenses/>.
 % 
 % 
-        userData=get(handles.figure1, 'UserData');
-        userData.statusM(x).Checked(procID) = value;
-        set(handles.figure1, 'UserData', userData)
-
-        dfs_checkAllMovies(procID, value, handles, x)
+            userData=get(handles.figure1, 'UserData');
+            userData.statusM(x).Checked(procID) = value;
+            set(handles.figure1, 'UserData', userData)
+            
+            dfs_checkAllMovies(procID, value, handles, x)
+        end
+    else 
+        for x = setdiff(1:length(userData.ML), userData.id)
+            % Recalls the userData that may have been updated by the
+            % checkAllMovies function
+            userData=get(handles.figure1, 'UserData');
+            userData.statusM(x).Checked(procID) = value;
+            set(handles.figure1, 'UserData', userData)
+            
+            dfs_checkAllMovies(procID, value, handles, x)
+        end
     end
 end
 
