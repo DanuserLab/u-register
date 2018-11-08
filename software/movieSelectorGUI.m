@@ -195,7 +195,6 @@ packageList = {
     'BiosensorsPackage';...
     'FocalAdhesionPackage'
     'FocalAdhesionSegmentationPackage'
-    'IntegratorPackage'
     'QFSMPackage'
     'SegmentationPackage'
     'TFMPackage'
