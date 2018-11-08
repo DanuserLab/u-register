@@ -57,7 +57,6 @@ classdef SegmentationProcess < MaskProcess
             procClasses = ...
                 {@ThresholdProcess;
                  @MultiScaleAutoSegmentationProcess
-                 @MSSSegmentationProcess;
                  @ThresholdProcess3D;
                  @ExternalSegmentationProcess;
                  @NucSegProcess;

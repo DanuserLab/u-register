@@ -1,5 +1,7 @@
 classdef MultiScaleAutoSegmentationProcess < SegmentationProcess
-    %A concrete process for segmenting using multi-scale steerable filters
+    % A concrete process multi-scale automatic segmentation
+    % Segment a single cell image by combining segmentations.
+    % see multiScaleAutoSeg.m
 %
 % Copyright (C) 2018, Danuser Lab - UTSouthwestern 
 %
