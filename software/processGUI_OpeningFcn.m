@@ -129,11 +129,20 @@ end
 
 % Check for multiple movies else
 if isfield(handles,'checkbox_applytoall')
-    if numel(userData_main.MD) ==1
-        set(handles.checkbox_applytoall,'Value',0,'Visible','off');
+    if ~isa(userData.crtPackage, 'XcorrFluctuationPackage')
+        if numel(userData_main.MD) ==1
+            set(handles.checkbox_applytoall,'Value',0,'Visible','off');
+        else
+            set(handles.checkbox_applytoall, 'Value',...
+                userData_main.applytoall(userData.procID));
+        end
     else
-        set(handles.checkbox_applytoall, 'Value',...
-            userData_main.applytoall(userData.procID));
+        if numel(userData_main.ML) ==1
+            set(handles.checkbox_applytoall,'Value',0,'Visible','off');
+        else
+            set(handles.checkbox_applytoall, 'Value',...
+                userData_main.applytoall(userData.procID));
+        end
     end
     uicontrol(handles.pushbutton_done);
 end
