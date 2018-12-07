@@ -15,3 +15,9 @@ The general process for analyzing a cell with this package is as follows. Detail
 3. Run Windowing step to create sampling windows
 4. Sample the protrusion vectors (edge velocities) for each window (if calculated)  
 5. Sample the fluorescence in each window. And you’re done!
+
+
+----------------------
+[Danuser Lab Website](https://www.utsouthwestern.edu/labs/danuser/)
+
+[Software Links](https://www.utsouthwestern.edu/labs/danuser/software/)
