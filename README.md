@@ -18,6 +18,8 @@ The general process for analyzing a cell with this package is as follows. Detail
 
 
 ----------------------
+[K. Lee , H.L. Elliott, et al. Cell (2015)](https://doi.org/10.1016/j.cels.2015.07.001)
+
 [Danuser Lab Website](https://www.utsouthwestern.edu/labs/danuser/)
 
 [Software Links](https://www.utsouthwestern.edu/labs/danuser/software/)
