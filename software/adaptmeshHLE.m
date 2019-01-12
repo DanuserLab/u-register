@@ -83,7 +83,7 @@ function [u,p,e,t]=adaptmesh(g,b,c,a,f,p1,p2,p3,p4,p5,p6,p7,p8,p9,p10,p11,p12,p1
 %
 %       See also ASSEMPDE, PDEBOUND, PDEGEOM, INITMESH, REFINEMESH, PDENONLIN
 %
-% Copyright (C) 2018, Danuser Lab - UTSouthwestern 
+% Copyright (C) 2019, Danuser Lab - UTSouthwestern 
 %
 % This file is part of WindowingPackage.
 % 
