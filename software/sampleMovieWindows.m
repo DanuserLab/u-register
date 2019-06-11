@@ -1,24 +1,24 @@
 function movieData = sampleMovieWindows(movieData,paramsIn)
-%SAMPLEMOVIEWINDOWS samples the movie images in the sampling windows created with getMovieWindows.m 
-% 
+%SAMPLEMOVIEWINDOWS samples the movie images in the sampling windows created with getMovieWindows.m
+%
 % movieData = sampleMovieWindows(movieData)
 % movieData = sampleMovieWindows(movieData,paramsIn)
-% 
+%
 % This function goes through each frame in the movie and samples the images
 % in the areas occupied by each sampling window that has been created using
 % getMovieWindows.m. Various statistics for the pixels inside each window
-% are calculated, and stored in an array the same size as the window array. 
-% 
-% 
+% are calculated, and stored in an array the same size as the window array.
+%
+%
 % Input:
-% 
+%
 %   movieData - A MovieData object describing the movie to be processed, as
 %   created by setupMovieDataGUI.m
 %
 %   paramsIn - Structure with inputs for optional parameters. The
 %   parameters should be stored as fields in the structure, with the field
 %   names and possible values as described below
-% 
+%
 %   Possible Parameter Structure Field Names:
 %       ('FieldName' -> possible values)
 %
@@ -49,14 +49,16 @@ function movieData = sampleMovieWindows(movieData,paramsIn)
 %
 %   movieData - The updated MovieData object, with the parameters and
 %   locations of the samples stored in it.
-% 
+%
 %   Additionally, the window samples for each channel will be written to a
 %   file in the OutputDirectory, as .mat files, with one file per channel.
-% 
-% 
+%
+%
 % Hunter Elliott
 % 7/2010
 %
+% Jungsik Noh, 2019/06/04. Parallelized currSamples over frames using
+% parfor.
 %
 % Copyright (C) 2019, Danuser Lab - UTSouthwestern 
 %
@@ -79,14 +81,14 @@ function movieData = sampleMovieWindows(movieData,paramsIn)
 
 %% ---------- Input ---------------- %%
 
-if nargin < 1 || ~isa(movieData,'MovieData')   
-    error('The first input must be a valid MovieData object!');        
+if nargin < 1 || ~isa(movieData,'MovieData')
+    error('The first input must be a valid MovieData object!');
 end
 
 if nargin < 2 || isempty(paramsIn)
-    paramsIn = [];  
+    paramsIn = [];
 end
-   
+
 %Check if the movie has been sampled before
 iProc = movieData.getProcessIndex('WindowSamplingProcess',1,false);
 if isempty(iProc)
@@ -104,9 +106,9 @@ assert(~isempty(iWinProc),'The movie could not be sampled, because it has not be
 winProc= movieData.processes_{iWinProc};
 
 %Make sure that the windows are okay.
-assert(winProc.checkChannelOutput,'The window files for the input movie are not valid!')  
+assert(winProc.checkChannelOutput,'The window files for the input movie are not valid!')
 
-% Check 
+% Check
 stack=dbstack;
 if ~any(strcmp('Process.run',{stack(:).name})); winSampProc.run(); return; end
 
@@ -150,12 +152,12 @@ end
 
 if isempty(p.SegProcessIndex)
     %Get the mask information from the windowing process
-    iSegProc = movieData.processes_{iWinProc}.funParams_.SegProcessIndex;    
+    iSegProc = movieData.processes_{iWinProc}.funParams_.SegProcessIndex;
     p.MaskChannelIndex = movieData.processes_{iWinProc}.funParams_.ChannelIndex;
 else
-    iSegProc = p.SegProcessIndex;    
+    iSegProc = p.SegProcessIndex;
     if isempty(p.MaskChannelIndex)
-        p.MaskChannelIndex = find(movieData.processes_{iSegProc}.checkChannelOutput);        
+        p.MaskChannelIndex = find(movieData.processes_{iSegProc}.checkChannelOutput);
     end
 end
 
@@ -170,34 +172,36 @@ p.SegProcessIndex = iSegProc;
 
 if ~p.BatchMode && feature('ShowFigureWindows')
     wtBar = waitbar(0,'Please wait, sampling windows...');
-else 
+else
     wtBar = -1;
-end  
+end
 
 disp('Starting window sampling...');
 
+% for parfor
+currSamplesCell = cell(nFrames, 1);
 
-for iFrame = 1:nFrames
-     
+parfor iFrame = 1:nFrames
+    disp(iFrame)
     %Load the windows
-    currWin = winProc.loadChannelOutput(iFrame);    
-        
+    currWin = winProc.loadChannelOutput(iFrame);
+    
     %Load the mask(s) to use first, so we can combine them and use this to
     %mask every channel.
     currMask = true(imSize);
     for j = p.MaskChannelIndex
         currMask = currMask & movieData.processes_{iSegProc}.loadChannelOutput(j,iFrame);
-    end    
+    end
     
     %Go through each channel and sample it
     stack2sample=zeros([imSize nInput]);
-
+    
     for i=1:numel(p.ProcessIndex)
         iProc = p.ProcessIndex{i};
         for j=1:numel(p.ChannelIndex{i})
             iChan = p.ChannelIndex{i}(j);
             iInput = sum(nChan(1:i-1))+j;
-
+            
             if ~isempty(iProc)
                 stack2sample(:,:,iInput) = movieData.processes_{iProc}.loadChannelOutput(iChan,iFrame,'output',p.OutputName{i});
             else
@@ -206,24 +210,25 @@ for iFrame = 1:nFrames
         end
     end
     
-    currSamples = sampleStackWindows(currWin,stack2sample,currMask);
-    assert(numel(currSamples)==nInput);
+    currSamplesCell{iFrame} = sampleStackWindows(currWin,stack2sample,currMask);
+    assert(numel(currSamplesCell{iFrame})==nInput);
     
-    %Copy these into the whole-movie array
-    currSize = size(currSamples(1).(sampledFields{1}));%all field arrays are same size
-    for i=1:nInput
-        for j = 1:nFields
+end
+
+%Copy these into the whole-movie array
+
+for i=1:nInput
+    for j = 1:nFields
+        for iFrame = 1:nFrames
+            currSize = size(currSamplesCell{iFrame}(1).(sampledFields{1})); %all field arrays are same size
             allSamples(i).(sampledFields{j})(1:currSize(1),1:currSize(2),iFrame) ...
-                = currSamples(i).(sampledFields{j});
+                = currSamplesCell{iFrame}(i).(sampledFields{j});
+            %Update the waitbar occasionally  to minimize slowdown
+            if ishandle(wtBar) && mod(iFrame,5)
+                waitbar(iFrame/nFrames,wtBar)
+            end
         end
     end
-       
-        
-    if ishandle(wtBar) && mod(iFrame,5)
-        %Update the waitbar occasionally  to minimize slowdown
-        waitbar(iFrame/nFrames,wtBar)
-    end
-    
 end
 
 %% ------- Output ------- %%
@@ -234,7 +239,7 @@ for i=1:numel(p.ProcessIndex)
     for j=1:numel(p.ChannelIndex{i})
         iChan = p.ChannelIndex{i}(j);
         iInput = sum(nChan(1:i-1))+j;
-
+        
         samples = allSamples(iInput);  %#ok<NASGU>
         save(outFilePaths{i,iChan},'samples');
     end
