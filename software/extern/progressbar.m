@@ -81,7 +81,7 @@ function progressbar(fractiondone, position, description_in)
 % 2004-Oct-20   Efficient if-else structure for sec2timestr
 %
 %
-% Copyright (C) 2019, Danuser Lab - UTSouthwestern 
+% Copyright (C) 2020, Danuser Lab - UTSouthwestern 
 %
 % This file is part of WindowingPackage.
 % 

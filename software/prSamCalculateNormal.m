@@ -17,7 +17,7 @@ function nxy_n=prSamCalculateNormal(img, sp_n, r_n)
 % Modefied as prSamCalculateNormal.m by Shann-Ching Chen, LCCB, 08/26/2008
 % See also: prSamProtrusion
 %
-% Copyright (C) 2019, Danuser Lab - UTSouthwestern 
+% Copyright (C) 2020, Danuser Lab - UTSouthwestern 
 %
 % This file is part of WindowingPackage.
 % 

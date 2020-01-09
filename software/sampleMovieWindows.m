@@ -60,7 +60,7 @@ function movieData = sampleMovieWindows(movieData,paramsIn)
 % Jungsik Noh, 2019/06/04. Parallelized currSamples over frames using
 % parfor.
 %
-% Copyright (C) 2019, Danuser Lab - UTSouthwestern 
+% Copyright (C) 2020, Danuser Lab - UTSouthwestern 
 %
 % This file is part of WindowingPackage.
 % 
