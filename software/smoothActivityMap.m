@@ -48,7 +48,7 @@ function smoothedMap = smoothActivityMap(matIn,varargin)
 % Hunter Elliott
 % 9/2012
 %
-% Copyright (C) 2020, Danuser Lab - UTSouthwestern 
+% Copyright (C) 2021, Danuser Lab - UTSouthwestern 
 %
 % This file is part of WindowingPackage.
 % 

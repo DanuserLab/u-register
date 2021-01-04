@@ -37,7 +37,7 @@ function [pts,values] = gradientDescent(F,X,Y) %#ok<STOUT,INUSD>
 % line(pts{i}(:,1), pts{i}(:,2), 'Color', 'r');
 % end
 %
-% Copyright (C) 2020, Danuser Lab - UTSouthwestern 
+% Copyright (C) 2021, Danuser Lab - UTSouthwestern 
 %
 % This file is part of WindowingPackage.
 % 

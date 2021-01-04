@@ -18,7 +18,7 @@ function [output] = prSamProtrusion(inputParam)
 % Last updated: August 26, 2008 by Shann-Ching Chen, LCCB
 % See also: protrusionAnalysis, prSamProtrusionDownSpl, prSamProtrusionOptSp
 %
-% Copyright (C) 2020, Danuser Lab - UTSouthwestern 
+% Copyright (C) 2021, Danuser Lab - UTSouthwestern 
 %
 % This file is part of WindowingPackage.
 % 
