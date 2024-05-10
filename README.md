@@ -20,8 +20,14 @@ The general process for analyzing a cell with this package is as follows. Detail
 5. Sample the fluorescence in each window. And you’re done!
 
 ### Software Updates
+#### New in Version 2.1:
 Windowing has been renamed to **u-register**. Please select **u-register** from the analysis packages list to run the software.
 
+#### New in Version 2.0:
+- Added an optional step, Generate Summation Channel, before the Segmentation step
+- Added an optional step, Trembling Correction, after the Segmentation step and before the Mask Refinement step
+- Updated the MSA (Multi-Scale Automatic) Segmentation step
+  
 ----------------------
 ### Danuser Lab Links
 [Danuser Lab Website](https://www.danuserlab-utsw.org/)
