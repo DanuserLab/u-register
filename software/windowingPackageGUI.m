@@ -1,11 +1,11 @@
 function varargout = windowingPackageGUI(varargin)
-% Launch the GUI for the Windowinf Package
+% Launch the GUI for the Windowing Package
 %
 % This function calls the generic packageGUI function, passes all its input
 % arguments and returns all output arguments of packageGUI
 %
 %
-% Copyright (C) 2021, Danuser Lab - UTSouthwestern 
+% Copyright (C) 2024, Danuser Lab - UTSouthwestern 
 %
 % This file is part of WindowingPackage.
 % 

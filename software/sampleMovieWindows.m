@@ -59,8 +59,11 @@ function movieData = sampleMovieWindows(movieData,paramsIn)
 %
 % Jungsik Noh, 2019/06/04. Parallelized currSamples over frames using
 % parfor.
+% 
+% Made it work for cropped movie previously done in Biosensors Package.
+% Qiongjing (Jenny) Zou, Jan 2023 & April 2023
 %
-% Copyright (C) 2021, Danuser Lab - UTSouthwestern 
+% Copyright (C) 2024, Danuser Lab - UTSouthwestern 
 %
 % This file is part of WindowingPackage.
 % 
@@ -118,10 +121,35 @@ if ~iscell(p.ChannelIndex), p.ChannelIndex={p.ChannelIndex}; end
 if ~iscell(p.OutputName), p.OutputName={p.OutputName}; end
 
 nFrames = movieData.nFrames_;
-imSize = movieData.imSize_;
+% imSize = movieData.imSize_; % does not work for cropped movie
 
 nChan = cellfun(@numel,p.ChannelIndex);
 nInput = sum(nChan);
+
+% check SegProcessIndex
+if isempty(p.SegProcessIndex)
+    %Get the mask information from the windowing process
+    iSegProc = movieData.processes_{iWinProc}.funParams_.SegProcessIndex;
+    p.MaskChannelIndex = movieData.processes_{iWinProc}.funParams_.ChannelIndex;
+else
+    iSegProc = p.SegProcessIndex;
+    if isempty(p.MaskChannelIndex)
+        p.MaskChannelIndex = find(movieData.processes_{iSegProc}.checkChannelOutput);
+    end
+end
+
+assert(isa(movieData.processes_{iSegProc},'MaskProcess'),'The segmentation process specified by the windowing process is invalid! Please check settings and re-run windowing!')
+assert(~isempty(p.MaskChannelIndex),'The specified segmentation process does not have valid masks for the specified channels!')
+%Store these in the parameter structure.
+p.SegProcessIndex = iSegProc;
+
+
+% Make this process work for previous cropped movie - Jan 2023
+inDir = movieData.processes_{p.SegProcessIndex}.outFilePaths_{1,p.MaskChannelIndex(1)};
+dinfo = dir(inDir);
+imInfo = imfinfo(fullfile(dinfo(end).folder,dinfo(end).name));
+n = imInfo.Height;
+m = imInfo.Width;
 
 %Set up and store the output directories for the window samples.
 mkClrDir(p.OutputDirectory)
@@ -129,7 +157,11 @@ outFilePaths =cell(numel(p.ProcessIndex),numel(movieData.channels_));
 for i=1:numel(p.ProcessIndex)
     iProc = p.ProcessIndex{i};
     if isempty(iProc)
-        pString='Raw images - channel ';
+        if isequal(n, movieData.imSize_(1))
+            pString='Raw images - channel ';
+        else
+            pString='Cropped raw images - channel '; % Make this process work for previous cropped movie - Jan 2023
+        end
     else
         parentOutput = movieData.processes_{iProc}.getDrawableOutput;
         iOutput = strcmp(p.OutputName{i},{parentOutput.var});
@@ -149,22 +181,6 @@ allSamples(nInput,1)=struct();
 for j = 1:nFields
     [allSamples.(sampledFields{j})] = deal(nan(winProc.nSliceMax_,winProc.nBandMax_,nFrames));
 end
-
-if isempty(p.SegProcessIndex)
-    %Get the mask information from the windowing process
-    iSegProc = movieData.processes_{iWinProc}.funParams_.SegProcessIndex;
-    p.MaskChannelIndex = movieData.processes_{iWinProc}.funParams_.ChannelIndex;
-else
-    iSegProc = p.SegProcessIndex;
-    if isempty(p.MaskChannelIndex)
-        p.MaskChannelIndex = find(movieData.processes_{iSegProc}.checkChannelOutput);
-    end
-end
-
-assert(isa(movieData.processes_{iSegProc},'MaskProcess'),'The segmentation process specified by the windowing process is invalid! Please check settings and re-run windowing!')
-assert(~isempty(p.MaskChannelIndex),'The specified segmentation process does not have valid masks for the specified channels!')
-%Store these in the parameter structure.
-p.SegProcessIndex = iSegProc;
 
 
 
@@ -188,13 +204,22 @@ parfor iFrame = 1:nFrames
     
     %Load the mask(s) to use first, so we can combine them and use this to
     %mask every channel.
-    currMask = true(imSize);
+    if isequal(n, movieData.imSize_(1))
+        currMask=true(movieData.imSize_);
+    else
+        currMask = true([n, m]); % Make this process work for previous cropped movie - Jan 2023
+    end
+
     for j = p.MaskChannelIndex
         currMask = currMask & movieData.processes_{iSegProc}.loadChannelOutput(j,iFrame);
     end
     
     %Go through each channel and sample it
-    stack2sample=zeros([imSize nInput]);
+    if isequal(n, movieData.imSize_(1))
+        stack2sample=zeros([movieData.imSize_ nInput]);
+    else
+        stack2sample=zeros([n, m, nInput]); % Make this process work for previous cropped movie - Jan 2023
+    end
     
     for i=1:numel(p.ProcessIndex)
         iProc = p.ProcessIndex{i};
@@ -204,8 +229,16 @@ parfor iFrame = 1:nFrames
             
             if ~isempty(iProc)
                 stack2sample(:,:,iInput) = movieData.processes_{iProc}.loadChannelOutput(iChan,iFrame,'output',p.OutputName{i});
-            else
+            elseif isequal(n, movieData.imSize_(1))
                 stack2sample(:,:,iInput) = movieData.channels_(iChan).loadImage(iFrame);
+            else % Make this process work for previous cropped movie - Jan 2023
+                iCropShadeCorrectROIProc = movieData.getProcessIndex('CropShadeCorrectROIProcess',1,true); % nDesired = 1 ; askUser = true
+                if isempty(iCropShadeCorrectROIProc)
+                    error('Crop ROI positions could not be found, CropShadeCorrectROIProcess needs to be done before run this process for cropped movie.')
+                end
+                cropROI = movieData.processes_{iCropShadeCorrectROIProc}.funParams_.cropROIpositions;
+                % crop raw image to the cropped size and positions. - Jan 2023
+                stack2sample(:,:,iInput) = imcrop(movieData.channels_(iChan).loadImage(iFrame), cropROI);     
             end
         end
     end

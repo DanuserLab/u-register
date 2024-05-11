@@ -1,9 +1,9 @@
 classdef MultiScaleAutoSegmentationProcess < SegmentationProcess
     % A concrete process multi-scale automatic segmentation
     % Segment a single cell image by combining segmentations.
-    % see multiScaleAutoSeg.m
+    % see multiScaleAutoSeg_multiObject.m
 %
-% Copyright (C) 2021, Danuser Lab - UTSouthwestern 
+% Copyright (C) 2024, Danuser Lab - UTSouthwestern 
 %
 % This file is part of WindowingPackage.
 % 
@@ -23,6 +23,10 @@ classdef MultiScaleAutoSegmentationProcess < SegmentationProcess
 % 
     
     % Andrew R. Jamieson - Sep 2017
+
+    % Replace wrapper fcn from multiScaleAutoSeg to multiScaleAutoSeg_multiObject
+    % as per Jungsik's request to reflect new algorithm in MSA_Seg_multiObject_imDir
+    % Qiongjing (Jenny) Zou, Aug 2021
     
     methods
         function obj = MultiScaleAutoSegmentationProcess(owner,varargin)
@@ -42,7 +46,7 @@ classdef MultiScaleAutoSegmentationProcess < SegmentationProcess
                 % Define arguments for superclass constructor
                 super_args{1} = owner;
                 super_args{2} = MultiScaleAutoSegmentationProcess.getName;
-                super_args{3} = @multiScaleAutoSeg;
+                super_args{3} = @multiScaleAutoSeg_multiObject;
                 if isempty(funParams)
                     funParams=MultiScaleAutoSegmentationProcess.getDefaultParams(owner,outputDir);
                 end
@@ -72,11 +76,26 @@ classdef MultiScaleAutoSegmentationProcess < SegmentationProcess
             % Set default parameters
             funParams.ChannelIndex = 1:numel(owner.channels_);
             funParams.OutputDirectory = [outputDir  filesep 'MultiScaleAutoSeg_Masks'];
-            funParams.ProcessIndex = []; %Default is to use raw images
-            funParams.tightness = .5; 
-            funParams.type = 'middle';
-            funParams.diagnostics = false;
+            funParams.ProcessIndex = []; %Default is to use raw images % this will be auto-set to ShadeCorrectionProcess or CropShadeCorrectROIProcess in BiosensorsPackage, see sanityCheck in BiosensorsPackage.
+            funParams.tightness = .5; % thresholding
+            funParams.ObjectNumber = 1;
+            funParams.finalRefinementRadius = 3;
 
+            funParams.useSummationChannel = 0; % if true, then do msa seg on the output of summation channel.
+
+            funParams.numVotes = -1; %tightness and numVotes are exclusive options: if one is chosen, the other is inactive (-1); 
+                                    % If numVotes chosen, default is 22, value range is 0<= x <= 42. x should be an integer.
+
+            %% extra parameters not on GUI:
+            funParams.imagesOut = 1;
+            funParams.figVisible = 'on';
+            funParams.MinimumSize = 10; % unit is pixel
+
+
+
+        %% Parameters for old wrapper fcn:
+            % funParams.type = 'middle';
+            % funParams.diagnostics = false;
             %% extra parameters?
             % sigmas = [0 0.66 1 1.66 2.5 4];  % unit: pixel (common scales for xxx by xxx size confocal images)
             % p.MinimumSize = 100;        

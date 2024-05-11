@@ -20,7 +20,7 @@ function varargout = movieSelectorGUI(varargin)
 %
 % See also: GUIDE, GUIDATA, GUIHANDLES
 %
-% Copyright (C) 2021, Danuser Lab - UTSouthwestern 
+% Copyright (C) 2024, Danuser Lab - UTSouthwestern 
 %
 % This file is part of WindowingPackage.
 % 
@@ -205,24 +205,19 @@ function packageList = getPackageList()
 packageList = {
     'BiosensorsPackage';...
     'FocalAdhesionPackage'
-    'FocalAdhesionSegmentationPackage'
     'QFSMPackage'
-    'SegmentationPackage'
     'TFMPackage'
     'TrackingPackage'
-    'ParkinTranslocationScoringPackage'
     'WindowingPackage'
-    'ColocalizationPackage'
     'FilamentAnalysisPackage'
-    'ScoreGemPackage'
-    'MicroNucQuantPackage'
-    'MaskPropsCalcFilterPackage'
-    'MaskQuantPackage'
     'Morphology3DPackage'
     'XcorrFluctuationPackage'
     'NewUTrack3DPackage'
-    'FishATLASPackage'
+    % 'FishATLASPackage'
     'GrangerCausalityAnalysisPackage'
+    'uSignal3DPackage'
+    'InfoFlowPackage'
+    'uSegmentPackage'
     };
 validPackage = cellfun(@(x) exist(x,'class')==8,packageList);
 packageList = packageList(validPackage);
@@ -305,8 +300,11 @@ function pushbutton_prepare_Callback(hObject, eventdata, handles)
 userData = get(handles.figure1, 'UserData');
 % if preparation GUI exist, delete it
 if ishandle(userData.newFig), delete(userData.newFig); end
-if ~isempty(userData.MD) && isempty(userData.ImD)
+if isempty(userData.ImD)
 userData.newFig = dataPreparationGUI('mainFig',handles.figure1);
+else
+   warndlg('Please remove the ImageData structure then click Prepare again.', 'Movie Selector', 'modal')
+   return
 end
 set(handles.figure1,'UserData',userData);
 

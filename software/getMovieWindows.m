@@ -177,9 +177,11 @@ function movieData = getMovieWindows(movieData,paramsIn)
 % 11/2017
 % Parallelized 'ConstantWidth', 'ConstantNumber', and 'ProtrusionBased'.
 %
+% Made it work for cropped movie previously done in Biosensors Package.
+% Qiongjing (Jenny) Zou, Jan 2023 & April 2023
 %% ------ Parameters -------%%
 %
-% Copyright (C) 2021, Danuser Lab - UTSouthwestern 
+% Copyright (C) 2024, Danuser Lab - UTSouthwestern 
 %
 % This file is part of WindowingPackage.
 % 
@@ -358,7 +360,7 @@ end
 
 nFrames = movieData.nFrames_;
 nChan = numel(p.ChannelIndex);
-imSize = movieData.imSize_;
+% imSize = movieData.imSize_; % does not work for cropped movie
 
 %Get the mask directories and file names
 maskDir = movieData.processes_{iSegProc}.outFilePaths_(p.ChannelIndex);
@@ -369,7 +371,19 @@ maskNames = movieData.processes_{iSegProc}.getOutMaskFileNames(p.ChannelIndex);
 %Go through and load and check all the masks prior to windowing
 disp('Loading and checking all masks...')
 
-maskArray = movieData.getROIMask;
+% Make this process work for previous cropped movie. - Jan 2023
+inDir = movieData.processes_{p.SegProcessIndex}.outFilePaths_{1,p.ChannelIndex(1)};
+dinfo = dir(inDir);
+imInfo = imfinfo(fullfile(dinfo(end).folder,dinfo(end).name));
+n = imInfo.Height;
+m = imInfo.Width;
+imSize = [n m];
+if isequal(n, movieData.imSize_(1))
+    maskArray = movieData.getROIMask;
+else
+    maskArray = true([n, m, movieData.nFrames_]);
+end
+
 for iFrame = 1:nFrames;
     
     %Open and combine masks from the selected channels

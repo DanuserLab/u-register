@@ -76,9 +76,11 @@ function movieData = getMovieProtrusion(movieData,paramsIn)
 % 12/2017
 % Parallelized protrusion detection
 %
+% Made it work for cropped movie previously done in Biosensors Package.
+% Qiongjing (Jenny) Zou, Jan 2023 & April 2023
 %% ------- Parameters ------ %%
 %
-% Copyright (C) 2021, Danuser Lab - UTSouthwestern 
+% Copyright (C) 2024, Danuser Lab - UTSouthwestern 
 %
 % This file is part of WindowingPackage.
 % 
@@ -158,7 +160,7 @@ mkClrDir(p.OutputDirectory);
 
 nFrames = movieData.nFrames_;
 nChan = numel(p.ChannelIndex);
-imSize = movieData.imSize_;
+% imSize = movieData.imSize_; % does not work for cropped movie
 
 %Set up the inputs for sam's function that are common to all frames
 samIn.batch_processing = samBatch;
@@ -190,18 +192,31 @@ if ~p.BatchMode
 end        
 disp('Starting protrusion calculation...');
 
-prevMask = true(imSize);
-isPrevClosed = true;
+% prevMask = true(imSize); % does not work for cropped movie
+isPrevClosed = true; 
 protrusion = cell(nFrames-1,1);
 normals = cell(nFrames-1,1);
 smoothedEdge = cell(nFrames,1);
 
-roiMask=movieData.getROIMask;
+% Make this process work for previous cropped movie, which is done in CropShadeCorrectROIProcess in BiosensorsPackage. - Jan 2023
+inDir = movieData.processes_{p.SegProcessIndex}.outFilePaths_{1,p.ChannelIndex(1)};
+dinfo = dir(inDir);
+imInfo = imfinfo(fullfile(dinfo(end).folder,dinfo(end).name));
+n = imInfo.Height;
+m = imInfo.Width;
+imSize = [n m];
+prevMask = true(n, m);
+if isequal(n, movieData.imSize_(1))
+    roiMask=movieData.getROIMask;
+else
+    roiMask = true([n, m, movieData.nFrames_]);
+end
+
 parfor iFrame = 2:nFrames
     [prevMask, isPrevClosed, prevOutline, isPrevClockWise] = ...
-        getOutlineInfo(roiMask(:,:,iFrame - 1), iFrame - 1, nChan, maskDirs, maskNames);
+        getOutlineInfo(roiMask(:,:,iFrame - 1), iFrame - 1, nChan, maskDirs, maskNames, imSize);
     [currMask, isCurrClosed, currOutline, isClockWise] = ...
-        getOutlineInfo(roiMask(:,:,iFrame), iFrame, nChan, maskDirs, maskNames);
+        getOutlineInfo(roiMask(:,:,iFrame), iFrame, nChan, maskDirs, maskNames, imSize);
     
     if isCurrClosed ~= isPrevClosed
         error('The function prSamProtrusion.m requries that if the mask object is touching the image boundary in one frame, it must also touch the boundary in every frame! Check masks and re-run calculation!')
@@ -257,7 +272,7 @@ disp('Finished protrusion calculation!')
 end
 
 
-function [mask, isClosed, outline, isClockWise] = getOutlineInfo(mask, iFrame, nChan, maskDirs, maskNames)
+function [mask, isClosed, outline, isClockWise] = getOutlineInfo(mask, iFrame, nChan, maskDirs, maskNames, imSize)
 %Load and combine masks from all channels
 for iChan = 1:nChan
     mask = mask & imread([maskDirs{iChan} filesep maskNames{iChan}{iFrame}]);
@@ -279,7 +294,7 @@ if CC.NumObjects > 1
     end
     %We just take the largest of these objects for prot vec calc
     [~,iBiggest] = max(cellfun(@(x)(numel(x)),CC.PixelIdxList));
-    mask = false(imSize);
+    mask = false(imSize); % imSize was not a input variable, added 2023-4-13
     mask(CC.PixelIdxList{iBiggest}) = true;
     
 end

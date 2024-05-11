@@ -1,7 +1,7 @@
 classdef WindowingPackage < Package
     % The main class of the Windowing package
 %
-% Copyright (C) 2021, Danuser Lab - UTSouthwestern 
+% Copyright (C) 2024, Danuser Lab - UTSouthwestern 
 %
 % This file is part of WindowingPackage.
 % 
@@ -24,7 +24,7 @@ classdef WindowingPackage < Package
     
     methods
         function obj = WindowingPackage(owner,varargin)
-            % Constructor of class QFSMPackage
+            % Constructor of class WindowingPackage
             
             if nargin == 0
                 super_args = {};
@@ -68,19 +68,21 @@ classdef WindowingPackage < Package
         
         function m = getDependencyMatrix(i,j)
             
-            m = [0 0 0 0 0 0;  %1 Segmentation
-                 1 0 0 0 0 0;  %2 MaskRefine (optional)
-                 1 2 0 0 0 0;  %3 ProtrusionProcess (optional)
-                 1 2 2 0 0 0;  %4 WindowingProcess
-                 1 2 1 1 0 0;  %5 ProtrusionSamplingProcess
-                 1 2 0 1 0 0;];%6 WindowSamplingProcess
+            m = [0 0 0 0 0 0 0 0;  %1 GenerateSummationChannelProcess (optional)
+                 2 0 0 0 0 0 0 0;  %2 Segmentation
+                 0 1 0 0 0 0 0 0;  %3 TremblingCorrectionProcess (optional)
+                 0 1 2 0 0 0 0 0;  %4 MaskRefine (optional)
+                 0 1 0 2 0 0 0 0;  %5 ProtrusionProcess (optional)
+                 0 1 0 2 2 0 0 0;  %6 WindowingProcess
+                 0 1 0 2 1 1 0 0;  %7 ProtrusionSamplingProcess
+                 0 1 0 2 0 1 0 0;];%8 WindowSamplingProcess
             if nargin<2, j=1:size(m,2); end
             if nargin<1, i=1:size(m,1); end
             m=m(i,j);
         end
         
         function name = getName()
-            name = 'Windowing';
+            name = 'u-register'; % Updated 2024-05-03. The old name was Windowing.
         end
         
         function varargout = GUI(varargin)
@@ -90,7 +92,9 @@ classdef WindowingPackage < Package
         
         function procConstr = getDefaultProcessConstructors(index)
             windowingProcConstr = {
+                @GenerateSummationChannelProcess,...
                 @MultiScaleAutoSegmentationProcess,...
+                @TremblingCorrectionProcess,...
                 @MaskRefinementProcess,...
                 @ProtrusionProcess,...
                 @WindowingProcess,...
@@ -102,7 +106,9 @@ classdef WindowingPackage < Package
         end
         function classes = getProcessClassNames(index)
             windowingClasses = {
+                'GenerateSummationChannelProcess',...
                 'SegmentationProcess',...
+                'TremblingCorrectionProcess',...
                 'MaskRefinementProcess',...
                 'ProtrusionProcess',...
                 'WindowingProcess',...
