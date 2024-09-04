@@ -37,7 +37,7 @@ classdef WindowingPackage < Package
                 outputDir = ip.Results.outputDir;
                 
                 super_args{1} = owner;
-                super_args{2} = [outputDir  filesep 'WindowingPackage'];
+                super_args{2} = [outputDir  filesep 'uRegisterPackage']; % Updated 2024-9-3. The old save folder name was WindowingPackage
             end
             
             % Call the superclass constructor
