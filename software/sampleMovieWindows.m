@@ -63,7 +63,7 @@ function movieData = sampleMovieWindows(movieData,paramsIn)
 % Made it work for cropped movie previously done in Biosensors Package.
 % Qiongjing (Jenny) Zou, Jan 2023 & April 2023
 %
-% Copyright (C) 2024, Danuser Lab - UTSouthwestern 
+% Copyright (C) 2025, Danuser Lab - UTSouthwestern 
 %
 % This file is part of WindowingPackage.
 % 

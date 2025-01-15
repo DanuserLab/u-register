@@ -3,7 +3,7 @@ function currMask = maskRefinementCoreFunc(currMask, p)
 % imclose, object number and filling holes.
 % 2017/05/29
 %
-% Copyright (C) 2024, Danuser Lab - UTSouthwestern 
+% Copyright (C) 2025, Danuser Lab - UTSouthwestern 
 %
 % This file is part of WindowingPackage.
 % 

@@ -3,7 +3,7 @@ classdef TremblingCorrectionProcess < MaskProcessingProcess
     % CORRECT trembling of masks that causes bias in correlation analysis mostly in the outermost layer.
     % see tremblingMaskCorrectionS131.m, maskRefinementCoreFunc.m, tremblingCorrect.m
 %
-% Copyright (C) 2024, Danuser Lab - UTSouthwestern 
+% Copyright (C) 2025, Danuser Lab - UTSouthwestern 
 %
 % This file is part of WindowingPackage.
 % 

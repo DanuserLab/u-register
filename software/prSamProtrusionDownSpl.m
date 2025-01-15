@@ -17,7 +17,7 @@ function [output] = prSamProtrusionDownSpl(inputParam, dl_rate)
 % Last updated: August 26, 2008 by Shann-Ching Chen, LCCB
 % See also: protrusionAnalysis, prSamProtrusion, prSamProtrusionOptSp
 %
-% Copyright (C) 2024, Danuser Lab - UTSouthwestern 
+% Copyright (C) 2025, Danuser Lab - UTSouthwestern 
 %
 % This file is part of WindowingPackage.
 % 

@@ -49,7 +49,7 @@ function [x0,y0,iout,jout] = intersectionsHLE(x1,y1,x2,y2,robust)
 % Email:   dmschwarz=ieee*org, dmschwarz=urgrad*rochester*edu
 % Modified and Checked in by Shann-Ching Chen, June 12, 2008
 %
-% Copyright (C) 2024, Danuser Lab - UTSouthwestern 
+% Copyright (C) 2025, Danuser Lab - UTSouthwestern 
 %
 % This file is part of WindowingPackage.
 % 
