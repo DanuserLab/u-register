@@ -131,6 +131,9 @@ userData.imPointHandle.isvalid=0;
 % Update channels listboxes depending on the selected process
 popupmenu_SegProcessIndex_Callback(hObject, eventdata, handles)
 
+% set checkbox_selectStartPoint on GUI with parameter, added this checkbox 2025-4
+set(handles.checkbox_StartPointPropag,'Value',funParams.StartPointPropag);
+
 % Choose default command line output for windowingProcessGUI
 handles.output = hObject;
 
@@ -319,6 +322,9 @@ end
 % Set parameters
 setMaskProcess = @(x) parseProcessParams(x, struct('SegProcessIndex',...
     x.owner_.getProcessIndex(segProcessClass,1,false)));
+
+funParams.StartPointPropag = get(handles.checkbox_StartPointPropag,'Value'); % this param added to GUI 2025-4, WindowingProc can run w/o protrusion if this is off
+
 processGUI_ApplyFcn(hObject, eventdata, handles,funParams,'settingFcn',{setMaskProcess});
 
 

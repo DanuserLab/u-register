@@ -54,11 +54,13 @@ classdef WindowingPackage < Package
             ProtProcID = find(cellfun(@(x) isa(x,'ProtrusionProcess'), obj.processes_));
 
             if procID == windProcID
+                if ~isempty(ProtProcID)
                 if isempty(obj.processes_{procID})
                     parentID(parentID==ProtProcID) = [];
                 elseif ~strcmp(obj.processes_{procID}.funParams_.MethodName, ...
                         'ProtrusionBased')
                     parentID(parentID==ProtProcID) = [];
+                end
                 end
             end
         end
