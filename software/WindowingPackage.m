@@ -74,8 +74,8 @@ classdef WindowingPackage < Package
                  2 0 0 0 0 0 0 0;  %2 Segmentation
                  0 1 0 0 0 0 0 0;  %3 TremblingCorrectionProcess (optional)
                  0 1 2 0 0 0 0 0;  %4 MaskRefine (optional)
-                 0 1 0 2 0 0 0 0;  %5 ProtrusionProcess (optional)
-                 0 1 0 2 2 0 0 0;  %6 WindowingProcess
+                 0 1 0 2 0 0 0 0;  %5 ProtrusionProcess
+                 0 1 0 2 1 0 0 0;  %6 WindowingProcess
                  0 1 0 2 1 1 0 0;  %7 ProtrusionSamplingProcess
                  0 1 0 2 0 1 0 0;];%8 WindowSamplingProcess
             if nargin<2, j=1:size(m,2); end
