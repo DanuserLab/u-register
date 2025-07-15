@@ -206,7 +206,7 @@ n = imInfo.Height;
 m = imInfo.Width;
 imSize = [n m];
 prevMask = true(n, m);
-if isequal(n, movieData.imSize_(1))
+if isequal(n, movieData.imSize_(1)) && isequal(m, movieData.imSize_(2))
     roiMask=movieData.getROIMask;
 else
     roiMask = true([n, m, movieData.nFrames_]);
