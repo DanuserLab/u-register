@@ -13,7 +13,7 @@ function tremblingMaskCorrectionS131(refinedmaskDir, outputDir, varargin)
 %
 % J Noh, 2017/09/22
 %
-% Copyright (C) 2025, Danuser Lab - UTSouthwestern 
+% Copyright (C) 2026, Danuser Lab - UTSouthwestern 
 %
 % This file is part of WindowingPackage.
 % 
